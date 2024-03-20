@@ -60,7 +60,7 @@ class ContractTier(object):
 
     def purchase(self, wallet):
         try:
-            cs_logger.info(f'Пытаемся купить Tier {self.tier}, контракт - {self.contract_address}')
+            cs_logger.info(f'Пытаемся купить Tier {self.tier} по таймингу, контракт - {self.contract_address}')
             approve_amount(wallet, self.contract_address, wETH_token, arbitrum_net, self.price)
             curr_time = ceil(time())
             while curr_time < settings.start_time:
