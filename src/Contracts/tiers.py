@@ -47,7 +47,7 @@ tier5 = ContractTier(
     contract_address='0x2EbdcEDE80039bb745C3ee2a18C740346dd6560e',
     price=220200000000000000,
     allocation=50000000000000000000,
-    buy_limit=5,
+    buy_limit=50,
     max_total_purchase=220200000000000000000
 )
 
@@ -57,7 +57,7 @@ tier6 = ContractTier(
     contract_address='0x213404cAB4e3FF587614daBF7bfB23FEb0354227',
     price=253300000000000000,
     allocation=200000000000000000000,
-    buy_limit=5,
+    buy_limit=100,
     max_total_purchase=253300000000000000000
 )
 
@@ -67,7 +67,7 @@ tier7 = ContractTier(
     contract_address='0xB503f244C02B9472FE0e49d558Df3A3274E1C38c',
     price=291200000000000000,
     allocation=200000000000000000000,
-    buy_limit=5,
+    buy_limit=200,
     max_total_purchase=254800000000000000000
 )
 
@@ -77,7 +77,7 @@ tier8 = ContractTier(
     contract_address='0x13e8c714F43C806933E0600880600002186BB924',
     price=334900000000000000,
     allocation=200000000000000000000,
-    buy_limit=5,
+    buy_limit=200,
     max_total_purchase=293037500000000000000
 )
 
@@ -87,7 +87,7 @@ tier9 = ContractTier(
     contract_address='0x2f2735573c137a57F8cE472D55039beb564Fa489',
     price=385200000000000000,
     allocation=200000000000000000000,
-    buy_limit=5,
+    buy_limit=200,
     max_total_purchase=674100000000000000000
 )
 
@@ -97,7 +97,7 @@ tier10 = ContractTier(
     contract_address='0x20F0E6560d3B2A3DCd3f6dCbF1182e9bB39C49D5',
     price=442900000000000000,
     allocation=200000000000000000000,
-    buy_limit=5,
+    buy_limit=200,
     max_total_purchase=664350000000000000000
 )
 
