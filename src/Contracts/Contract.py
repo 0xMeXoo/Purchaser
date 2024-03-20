@@ -69,6 +69,7 @@ class ContractTier(object):
             estimate_gas = check_estimate_gas(txn, arbitrum_net)
             if type(estimate_gas) is str:
                 cs_logger.info(f'{estimate_gas}')
+                delay_sleep(settings.delay[0], settings.delay[1])
                 return False
             txn['gas'] = estimate_gas
             txn_hash, txn_status = exec_txn(wallet.key, txn, arbitrum_net)
