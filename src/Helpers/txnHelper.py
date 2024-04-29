@@ -12,21 +12,42 @@ def get_gas_price(network):
     return gas_price
 
 
-def get_txn_dict(address, network, value=0, gas=3_000_000):
-    gas_price = get_gas_price(network)
+def get_priority(network):
+    priority_mult = round(uniform(settings.priority_mult[0], settings.priority_mult[1]), 3)
+    priority = int(network.web3.eth.max_priority_fee * priority_mult)
+    return priority
+
+
+def get_txn_dict(address, network, value=0, gas=5_000_000):
     nonce = network.web3.eth.get_transaction_count(address)
-    dict_transaction = {
-        'chainId': network.chain_id,
-        'from': address,
-        'value': value,
-        'gas': gas,
-        'gasPrice': gas_price,
-        'nonce': nonce,
-    }
+    dict_transaction = None
+
+    if settings.txn_type == 0:
+        gas_price = get_gas_price(network)
+        dict_transaction = {
+            'chainId': network.chain_id,
+            'from': address,
+            'value': value,
+            'gas': gas,
+            'gasPrice': gas_price,
+            'nonce': nonce,
+        }
+    elif settings.txn_type == 2:
+        gas_price = get_gas_price(network)
+        max_priority = network.web3.to_wei(0.025, 'gWei')
+        dict_transaction = {
+            'chainId': network.chain_id,
+            'from': address,
+            'value': value,
+            'gas': gas,
+            'maxFeePerGas': gas_price,
+            'maxPriorityFeePerGas': max_priority,
+            'nonce': nonce,
+        }
     return dict_transaction
 
 
-def check_tx_status(txn_hash, net, sec=3):
+def check_tx_status(txn_hash, net, sec=1):
     status = None
     while status is None:
         txn_done = net.web3.eth.wait_for_transaction_receipt(txn_hash, 60 * 5)
@@ -48,7 +69,6 @@ def approve_amount(wallet, spender_address, token, net, token_amount, approve_su
             ).build_transaction(dict_transaction)
 
             estimate_gas = check_estimate_gas(txn_approve, net)
-            print(estimate_gas)
             txn_approve['gas'] = estimate_gas
 
             txn_hash, txn_status = exec_txn(wallet.key, txn_approve, net)

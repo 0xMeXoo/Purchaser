@@ -1,5 +1,5 @@
 import settings
-from src.networks import arbitrum_net
+from src.networks import zksync_era as network
 from src.ABIs import Sale_ABI
 from src.Helpers.txnHelper import get_txn_dict, check_estimate_gas, approve_amount, exec_txn, delay_sleep, get_gas_price
 import eth_abi
@@ -14,8 +14,7 @@ class ContractTier(object):
         self.tier = tier
         self.title = title
         self.contract_address = contract_address
-        self.contract = arbitrum_net.web3.eth.contract(arbitrum_net.web3.to_checksum_address(contract_address),
-                                                       abi=Sale_ABI)
+        self.contract = network.web3.eth.contract(network.web3.to_checksum_address(contract_address), abi=Sale_ABI)
         if settings.smart_contract_source == 1:
             self.price = self.contract.functions.salePrice().call()
             self.allocation = self.contract.functions.publicAllocation().call()
@@ -35,7 +34,7 @@ class ContractTier(object):
     def build_txn_purchase(self, wallet):
         try:
             discount_code = settings.discount_code
-            dict_transaction = get_txn_dict(wallet.address, arbitrum_net)
+            dict_transaction = get_txn_dict(wallet.address, network)
             value = self.price * settings.lot_number
             if settings.simple_purchase == 1:
                 txn = self.contract.functions.purchase(
@@ -61,19 +60,23 @@ class ContractTier(object):
     def purchase(self, wallet):
         try:
             cs_logger.info(f'Пытаемся купить Tier {self.tier}')
-            approve_amount(wallet, self.contract_address, wETH_token, arbitrum_net, self.price)
+            approve_amount(wallet, self.contract_address, wETH_token, network, self.price)
             curr_time = ceil(time())
             while curr_time < settings.start_time:
                 curr_time = ceil(time())
             txn = self.build_txn_purchase(wallet)
-            estimate_gas = check_estimate_gas(txn, arbitrum_net)
-            if type(estimate_gas) is str:
-                cs_logger.info(f'{estimate_gas}')
-                return False
-            txn['gas'] = estimate_gas
-            txn_hash, txn_status = exec_txn(wallet.key, txn, arbitrum_net)
+            if settings.simulation_enable == 1:
+                estimate_gas = check_estimate_gas(txn, network)
+                if type(estimate_gas) is str:
+                    cs_logger.info(f'{estimate_gas}')
+                    return False
+                txn['gas'] = estimate_gas
+            else:
+                txn['gas'] = 10_000_000
+            txn_hash, txn_status = exec_txn(wallet.key, txn, network)
             cs_logger.info(f'Hash покупки: {txn_hash}')
-            wallet.txn_num[self.title] += settings.lot_number
+            if settings.simulation_enable == 1 and txn_status is True:
+                wallet.txn_num[self.title] += settings.lot_number
             return True
 
         except Exception as ex:
@@ -83,20 +86,20 @@ class ContractTier(object):
     def purchase_timing(self, wallet):
         try:
             i = 0
+            txn = None
             cs_logger.info(f'Пытаемся купить Tier {self.tier} по таймингу')
-            approve_amount(wallet, self.contract_address, wETH_token, arbitrum_net, self.price)
-            txn = self.build_txn_purchase(wallet)
-            txn['gas'] = 6_000_000
+            approve_amount(wallet, self.contract_address, wETH_token, network, self.price)
             curr_time = ceil(time())
             while curr_time < settings.start_time:
                 curr_time = ceil(time())
                 if (settings.start_time - curr_time) < 4 and i == 0:
                     i += 1
                     cs_logger.info(f'Сейл через несколько секунд!')
-                    txn['gasPrice'] = get_gas_price(arbitrum_net)
-            txn_hash, txn_status = exec_txn(wallet.key, txn, arbitrum_net)
+                    txn = self.build_txn_purchase(wallet)
+                    txn['gas'] = 8_000_000
+            txn_hash, txn_status = exec_txn(wallet.key, txn, network)
             cs_logger.info(f'Hash покупки: {txn_hash}')
-            wallet.txn_num[self.title] += settings.lot_number
+            #wallet.txn_num[self.title] += settings.lot_number
             return True
 
         except Exception as ex:

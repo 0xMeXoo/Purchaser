@@ -10,8 +10,8 @@ class Network(object):
         self.chain_id = self.web3.eth.chain_id
 
 
-arbitrum_net = Network(
-    name='Arbitrum',
-    rpc=settings.arbitrum_rpc,
+zksync_era = Network(
+    name='zkSyncEra',
+    rpc=settings.network_rpc,
     oracle_address='None'
 )
