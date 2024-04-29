@@ -59,7 +59,7 @@ class ContractTier(object):
 
     def purchase(self, wallet):
         try:
-            cs_logger.info(f'Пытаемся купить Tier {self.tier}')
+            cs_logger.info(f'Пытаемся купить Tier {self.tier}, контракт - {self.contract_address}')
             approve_amount(wallet, self.contract_address, wETH_token, network, self.price)
             curr_time = ceil(time())
             while curr_time < settings.start_time:
@@ -69,6 +69,7 @@ class ContractTier(object):
                 estimate_gas = check_estimate_gas(txn, network)
                 if type(estimate_gas) is str:
                     cs_logger.info(f'{estimate_gas}')
+                    delay_sleep(settings.delay[0], settings.delay[1])
                     return False
                 txn['gas'] = estimate_gas
             else:
@@ -87,7 +88,7 @@ class ContractTier(object):
         try:
             i = 0
             txn = None
-            cs_logger.info(f'Пытаемся купить Tier {self.tier} по таймингу')
+            cs_logger.info(f'Пытаемся купить Tier {self.tier} по таймингу, контракт - {self.contract_address}')
             approve_amount(wallet, self.contract_address, wETH_token, network, self.price)
             curr_time = ceil(time())
             while curr_time < settings.start_time:
