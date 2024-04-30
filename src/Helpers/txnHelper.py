@@ -95,7 +95,7 @@ def exec_txn(private_key, txn, net):
         if settings.test_mode == 0:
             signed_txn = net.web3.eth.account.sign_transaction(txn, private_key)
             txn_hash = net.web3.eth.send_raw_transaction(signed_txn.rawTransaction)
-            check_tx_status(txn_hash, net, 3)
+            # check_tx_status(txn_hash, net, 3)
             return txn_hash.hex(), True
         if settings.test_mode == 1:
             txn_hash = 'Test'  # Для тестов
