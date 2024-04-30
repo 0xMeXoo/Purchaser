@@ -33,8 +33,8 @@ def get_txn_dict(address, network, value=0, gas=5_000_000):
             'nonce': nonce,
         }
     elif settings.txn_type == 2:
-        gas_price = get_gas_price(network)
-        max_priority = network.web3.to_wei(0.025, 'gWei')
+        gas_price = network.web3.to_wei(1, 'gWei')
+        max_priority = network.web3.to_wei(0.5, 'gWei')
         dict_transaction = {
             'chainId': network.chain_id,
             'from': address,
